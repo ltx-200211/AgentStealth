@@ -1,7 +1,7 @@
 import requests 
 from typing import Any, Dict, List, Optional
 import json
-
+from credentials import siliconflow_api_key
 url = "https://api.siliconflow.cn/v1/chat/completions"
 
 
@@ -24,7 +24,7 @@ def llm_response(prompt: str,model='deepseek-ai/DeepSeek-R1-Distill-Llama-8B' ,t
         "response_format": {"type": "text"}
     }
     headers = {
-        "Authorization": "Bearer sk-hvvzcjtdefwzmrnifvyrvisktrfssstmbkwnkzkxncnydvhv",
+        "Authorization": f"Bearer {siliconflow_api_key}",
         "Content-Type": "application/json"
     }
 
