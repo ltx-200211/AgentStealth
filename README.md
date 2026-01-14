@@ -51,13 +51,7 @@ We use [Accelerate](https://github.com/huggingface/accelerate) and [Trl](https:/
 `rl/train.py` is used for multi-gpu training and `rl/train_single.py` is used for single-gpu training. You can change the configs to fit your own settings.
 ## Citation
 
-If you use this code, please consider citing our work:
-@article{shao2025agentstealth,
-  title={AgentStealth: Reinforcing Large Language Model for Anonymizing User-generated Text},
-  author={Shao, Chenyang and Li, Tianxing and Pu, Chenhao and Xu, Fengli and Li, Yong},
-  journal={arXiv preprint arXiv:2506.22508},
-  year={2025}
-}
+
 
 ## Acknowledgements
 
