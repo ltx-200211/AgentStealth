@@ -6,7 +6,7 @@ save_prompts: true
 timeout: 0.0
 task_config:
   run_eval_inference: true
-  profile_path: anonymized_results/llama/eval_inference_results1.jsonl
+  profile_path: anonymized_results/llama/eval_inference_results.jsonl
   outpath: anonymized_results/llama
   anonymizer:
     anon_type: llm
