@@ -54,7 +54,7 @@ writer = SummaryWriter(f"runs/{timestamp}")
 
 # === Config ===
 # --- Model Configuration ---
-MODEL_NAME = "models/llama3.1-8B"
+MODEL_NAME = "path/to/your/model"
 # 使用accelerator的设备设置
 DEVICE = accelerator.device
 logging.info(f"Using device: {DEVICE}")
@@ -75,7 +75,7 @@ logging.info(f"LoRA Config initialized: {lora_config}")
 
 
 # --- GRPO Configuration ---
-output_dir = "outputs_lora_llama_deepseek_attacker_base"
+output_dir = "outputs_path"
 grpo_config = GRPOConfig(
     max_prompt_length=8192,
     max_completion_length=1024,
