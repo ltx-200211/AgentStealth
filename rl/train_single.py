@@ -44,11 +44,11 @@ with open("train_rl.json", "r", encoding="utf-8") as f:
 accelerator = Accelerator()
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 writer = SummaryWriter(f"runs/{timestamp}")
-output_dir = "outputs_lora_qwen_deepseek_attacker_base"
+output_dir = "outputs_path"
 
 # === Config ===
 # --- Model Configuration ---
-MODEL_NAME = "models/Qwen-1.5B"
+MODEL_NAME = "path/to/your/model"
 # 使用accelerator的设备设置
 DEVICE = "cuda:0"
 logging.info(f"Using device: {DEVICE}")
