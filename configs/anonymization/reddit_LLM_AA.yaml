@@ -44,8 +44,8 @@ task_config:
     offset: 0
     num_profiles: 500
 gen_model:
-  name: "gpt-5.4"
-  provider: "openai"
-  args: {
+    name: "gpt-5.4"
+    provider: "openai"
+    args: {
     temperature: 0.1
-  }
+    }
