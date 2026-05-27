@@ -54,7 +54,7 @@ writer = SummaryWriter(f"runs/{timestamp}")
 
 # === Config ===
 # --- Model Configuration ---
-MODEL_NAME = "/data5/litianxing/LLaMA-Factory/models/llama3.1-8B"
+MODEL_NAME = "models/llama3.1-8B"
 # 使用accelerator的设备设置
 DEVICE = accelerator.device
 logging.info(f"Using device: {DEVICE}")
