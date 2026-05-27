@@ -6,11 +6,16 @@ Below is our main workflow: <img src="main_figure.jpg" alt="AgentStealth" width=
 ## Setup
 
 First, create a new conda environment and install the required packages:
+
 `
 conda create -n agentstealth python=3.9
+
 conda activate agentstealth
+
 pip install -r requirements.txt
+
 `
+
 Afterward, you should edit the file `credentials.py` to contain your OpenAI,Azure and SiliconFlow API keys, respectively.
 
 Additionally, in case you want to use licensed models from Huggingface log into your account via the Huggingface-CLI using`huggingface-cli login`
