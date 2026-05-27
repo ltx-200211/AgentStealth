@@ -1,7 +1,7 @@
 # Overview
 
 This is the repository accompanying our paper "AgentStealth: Reinforcing Large Language Model for Anonymizing User-generated Text" containing the code to reproduce all our main experiments.
-Below is our main workflow: <img src="main_figure.png" alt="AgentStealth" width="50%" />
+Below is our main workflow: <img src="main_figure.jpg" alt="AgentStealth" width="50%" />
 
 ## Setup
 
@@ -31,13 +31,13 @@ Below we provide an example workflow for a single run using DeepSeek-V3 on the t
 ```bash
 #  Inference
 python main.py --config_path configs/anonymization/reddit_LLM_coding_test.yaml
-
+python main.py --config_path configs/anonymization/reddit_LLM_coding_test_eval.yaml
 
 # Score the results - model will run the fastest, model_human is what we recommend for additional supervision 
-python src/anonymized/evaluate_anonymization.py --in_path anonymized_results/coding_test_LLM/inference_5.jsonl --decider "model" --out_path anonymized_results/coding_test_LLM --score
+python src/anonymized/evaluate_anonymization.py --in_path anonymized_results/coding_test_LLM/eval_inference_results.jsonl --decider "model" --out_path anonymized_results/coding_test_LLM --score
 
 # Format the results for plotting into a csv
-python src/anonymized/evaluate_anonymization.py --in_path anonymized_results/coding_test_LLM/inference_5.jsonl --decider "model" --out_path anonymized_results/coding_test_LLM
+python src/anonymized/evaluate_anonymization.py --in_path anonymized_results/coding_test_LLM/eval_inference_results.jsonl --decider "model" --out_path anonymized_results/coding_test_LLM
 
 ```
 
