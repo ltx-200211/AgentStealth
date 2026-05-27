@@ -24,14 +24,14 @@ task_config:
         temperature: 0.1
       }
     utility_model:
-      name: "deepseek-ai/DeepSeek-V3"
-      provider: "siliconflow"
+      name: "gpt-5.4"
+      provider: "openai"
       args: {
         temperature: 0.1
       }
     eval_inference_model:
-      name: "deepseek-ai/DeepSeek-V3"
-      provider: "siliconflow"
+      name: "gpt-5.4"
+      provider: "openai"
       args: {
         temperature: 0.1
       }
@@ -44,8 +44,8 @@ task_config:
     offset: 0
     num_profiles: 500
 gen_model:
-  name: "deepseek-ai/DeepSeek-V3"
-  provider: "siliconflow"
+  name: "gpt-5.4"
+  provider: "openai"
   args: {
     temperature: 0.1
   }
