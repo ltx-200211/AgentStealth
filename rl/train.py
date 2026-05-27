@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# 副本：reward 攻击推断阶段使用 SiliconFlow DeepSeek-V3 API（llm_response），而非本地 MODEL。
 import torch
 import random
 import logging
@@ -53,7 +54,7 @@ writer = SummaryWriter(f"runs/{timestamp}")
 
 # === Config ===
 # --- Model Configuration ---
-MODEL_NAME = "/datadisk/LLaMA-Factory/models/llama-3.1-8b-instruct"
+MODEL_NAME = "/data5/litianxing/LLaMA-Factory/models/llama3.1-8B"
 # 使用accelerator的设备设置
 DEVICE = accelerator.device
 logging.info(f"Using device: {DEVICE}")
@@ -74,14 +75,14 @@ logging.info(f"LoRA Config initialized: {lora_config}")
 
 
 # --- GRPO Configuration ---
-output_dir = "outputs_lora_b"
+output_dir = "outputs_lora_llama_deepseek_attacker_base"
 grpo_config = GRPOConfig(
     max_prompt_length=8192,
     max_completion_length=1024,
     gradient_accumulation_steps=1,
     learning_rate=1e-4,
     logging_steps=10,
-    num_generations=2,
+    num_generations=4,
     max_steps=200,
     save_steps=10,
     output_dir=output_dir,
@@ -136,20 +137,14 @@ model.gradient_checkpointing_enable()
 # === Dummy Attacker for Reward Simulation ===
 class DummyPrivacyAttacker:
     def __init__(self, weights: List[float] = None):
+        model_config = ModelConfig(
+            name="deepseek-ai/DeepSeek-V3",
+            provider="siliconflow",
+            max_workers=4,
+            args={"temperature": 0.1},
+        )
+        self._model = get_model(model_config)
         self.weights = weights or [0.8, 0.15, 0.05]
-        self._model = None
-
-    @property
-    def model(self):
-        if self._model is None:
-            model_config = ModelConfig(
-                name="deepseek-ai/DeepSeek-V3",
-                provider="siliconflow",
-                max_workers=4,
-                args={"temperature": 0.1},
-            )
-            self._model = get_model(model_config)
-        return self._model
 
     def attack(self, original: Dict[str, Any], protected: str) -> float:
         required_keys = {"pre", "pii_types", "pii_gt"}
@@ -163,38 +158,25 @@ class DummyPrivacyAttacker:
         try:
             anonymized = filter_and_align_comments(protected, original["pre"])
             prompt = create_infer_prompt(anonymized, original["pii_types"])
-            for i in range(10):
+            for _ in range(10):
                 try:
-                    input_ids_ = tokenizer.apply_chat_template(
+                    api_resp = llm_response(
                         prompt,
-                        add_generation_prompt=True,
-                        return_tensors="pt",
-                        padding=True,
-                        truncation=True,
-                    ).to(DEVICE)
-
-                    # 2. Generate completions (protected text)
-                    model.eval()
-                    with torch.no_grad():
-                        output = model.generate(
-                            input_ids=input_ids_,
-                            max_new_tokens=1200,
-                            do_sample=True,
-                            temperature=0.7,
-                            top_k=50,
-                            top_p=0.95,
-                            num_return_sequences=1
-                        )
-
-                    input_length = input_ids_.shape[1]
-                    completions_tokens = output[:, input_length:]
-                    completions = tokenizer.batch_decode(completions_tokens, skip_special_tokens=True)
-                    result = completions[0]
+                        model="deepseek-ai/DeepSeek-V3",
+                        temperature=0.7,
+                        max_tokens=2000,
+                    )
+                    if api_resp.get("error"):
+                        raise RuntimeError(api_resp["error"])
+                    choices = api_resp.get("choices") or []
+                    if not choices:
+                        raise RuntimeError(f"empty choices: {api_resp}")
+                    result = choices[0]["message"]["content"]
                     break
                 except Exception as e:
-                    print(f"Error generating completion: {e}")
+                    print(f"Error calling DeepSeek completion: {e}")
                     print("Retrying generation...")
-                    time.sleep(30)     
+                    time.sleep(30)
             
             
             infer_answer = parse_answer(result, original["pii_types"])
@@ -223,7 +205,7 @@ class DummyPrivacyAttacker:
                     idx = original["pii_types"].index(pii)
                     gt = original["pii_gt"][idx]
                     is_correct = check_correctness(
-                        gt, infer["guess"], infer["inference"], infer["inference"],pii, self.model, "model"
+                        gt, infer["guess"], infer["inference"], infer["inference"],pii, self._model, "model"
                     )
                     while len(is_correct)<3:
                         is_correct.append(0)
@@ -341,7 +323,7 @@ for epoch in range(num_epochs):
                     temperature=0.7,
                     top_k=50,
                     top_p=0.95,
-                    num_return_sequences=2
+                    num_return_sequences=grpo_config.num_generations
                 )
 
             input_length = input_ids.shape[1]
