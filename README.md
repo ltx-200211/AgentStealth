@@ -6,13 +6,11 @@ Below is our main workflow: <img src="main_figure.jpg" alt="AgentStealth" width=
 ## Setup
 
 First, create a new conda environment and install the required packages:
-`
+```bash
 conda create -n agentstealth python=3.9
-
 conda activate agentstealth
-
 pip install -r requirements.txt
-`
+```
 
 Afterward, you should edit the file `credentials.py` to contain your OpenAI,Azure and SiliconFlow API keys, respectively.
 
