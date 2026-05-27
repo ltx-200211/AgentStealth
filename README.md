@@ -22,9 +22,7 @@ If you want to run our workflow on the train dataset to collect data for the SFT
 
 For example `configs/anonymization/coding_test_LLM.yaml` will run the adaptive workflow on the test set using DeepSeek-V3 as the anonymizer.
 
-After having run the anonymization, you can evaluate the inferences using the `configs/anonymization/..._eval.yaml` configs. We generally use DeepSeek-V3 as the judge for these inferences. In case your locally applied judge is already DeepSeek-V3 you may skip the eval_inference config. Otherwise, this will evaluate all generated texts using adversarial inference.
-
-If you want to run an our newly generated data, you can change the "profile_path" to "data/synthetic/new_data.jsonl". 
+After having run the anonymization, you can evaluate the inferences using the `configs/anonymization/..._eval.yaml` configs. We generally use GPT-5.4 as the judge for these inferences. In case your locally applied judge is already GPT-5.4  you may skip the eval_inference config. Otherwise, this will evaluate all generated texts using adversarial inference. 
 
 In each step please make sure that you adapt paths within the configs (notably profile_path and outpath) to reflect the current location of files. (Side note: You will find that as a cost-saving measure, we shared the inferences on fully non-anonymized text).
 
