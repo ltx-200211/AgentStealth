@@ -47,5 +47,5 @@ gen_model:
     name: "gpt-5.4"
     provider: "openai"
     args: {
-    temperature: 0.1
+        temperature: 0.1
     }
