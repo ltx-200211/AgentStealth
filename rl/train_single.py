@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# 副本：reward 攻击推断使用 SiliconFlow DeepSeek-V3（llm_response），非本地 MODEL 副本。
 import torch
 import random
 import logging
@@ -43,10 +44,11 @@ with open("train_rl.json", "r", encoding="utf-8") as f:
 accelerator = Accelerator()
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 writer = SummaryWriter(f"runs/{timestamp}")
+output_dir = "outputs_lora_qwen_deepseek_attacker_base"
 
 # === Config ===
 # --- Model Configuration ---
-MODEL_NAME = "attack_ano"#"/root/llama-3.1-8b-instruct"
+MODEL_NAME = "models/Qwen-1.5B"
 # 使用accelerator的设备设置
 DEVICE = "cuda:0"
 logging.info(f"Using device: {DEVICE}")
@@ -67,7 +69,7 @@ logging.info(f"LoRA Config initialized: {lora_config}")
 
 
 # --- GRPO Configuration ---
-output_dir = "outputs_lora_b"
+
 grpo_config = GRPOConfig(
     max_prompt_length=8192,
     max_completion_length=1024,
@@ -135,9 +137,6 @@ class DummyPrivacyAttacker:
         )
         self._model = get_model(model_config)
         self.weights = weights or [0.8, 0.15, 0.05]
-        self.model = AutoModelForCausalLM.from_pretrained(MODEL_NAME).to(DEVICE)
-
-    
 
     def attack(self, original: Dict[str, Any], protected: str) -> float:
         required_keys = {"pre", "pii_types", "pii_gt"}
@@ -151,39 +150,25 @@ class DummyPrivacyAttacker:
         try:
             anonymized = filter_and_align_comments(protected, original["pre"])
             prompt = create_infer_prompt(anonymized, original["pii_types"])
-            for i in range(10):
+            for _ in range(10):
                 try:
-                    input_ids_ = tokenizer.apply_chat_template(
+                    api_resp = llm_response(
                         prompt,
-                        add_generation_prompt=True,
-                        return_tensors="pt",
-                        padding=True,
-                        truncation=True,
-                    ).to(DEVICE)
-
-                    # 2. Generate completions (protected text)
-                    self.model.eval()
-                    self.model.gradient_checkpointing_disable()
-                    with torch.no_grad():
-                        output = self.model.generate(
-                            input_ids=input_ids_,
-                            max_new_tokens=1200,
-                            do_sample=True,
-                            temperature=0.7,
-                            top_k=50,
-                            top_p=0.95,
-                            num_return_sequences=1
-                        )
-
-                    input_length = input_ids_.shape[1]
-                    completions_tokens = output[:, input_length:]
-                    completions = tokenizer.batch_decode(completions_tokens, skip_special_tokens=True)
-                    result = completions[0]
+                        model="deepseek-ai/DeepSeek-V3",
+                        temperature=0.7,
+                        max_tokens=1200,
+                    )
+                    if api_resp.get("error"):
+                        raise RuntimeError(api_resp["error"])
+                    choices = api_resp.get("choices") or []
+                    if not choices:
+                        raise RuntimeError(f"empty choices: {api_resp}")
+                    result = choices[0]["message"]["content"]
                     break
                 except Exception as e:
-                    print(f"Error generating completion: {e}")
+                    print(f"Error calling DeepSeek completion: {e}")
                     print("Retrying generation...")
-                    time.sleep(30)     
+                    time.sleep(30)
             
             
             infer_answer = parse_answer(result, original["pii_types"])
@@ -224,7 +209,7 @@ class DummyPrivacyAttacker:
                     continue
 
         ano_score = score / len(infer_answer) if infer_answer else 0.0
-        final_score=(utility_score+ano_score)/2
+        final_score=utility_score*0.5+ano_score*0.5
         if accelerator.is_main_process:
             logging.info(f"Final privacy score: {final_score:.2f}")
             
