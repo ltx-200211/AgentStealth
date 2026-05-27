@@ -1,7 +1,7 @@
 # Overview
 
-This is the repository accompanying our paper ["AgentStealth: Reinforcing Large Language Model for Anonymizing User-generated Text"] containing the code to reproduce all our main experiments.
-Below is our main workflow: <img src="main_figure.pdf" alt="AgentStealth" width="50%" />
+This is the repository accompanying our paper "AgentStealth: Reinforcing Large Language Model for Anonymizing User-generated Text" containing the code to reproduce all our main experiments.
+Below is our main workflow: <img src="main_figure.png" alt="AgentStealth" width="50%" />
 
 ## Setup
 
