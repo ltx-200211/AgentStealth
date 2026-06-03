@@ -1,6 +1,6 @@
 # Overview
 
-This is the repository accompanying our paper "AgentStealth: Reinforcing Large Language Model for Anonymizing User-generated Text" containing the code to reproduce all our main experiments.
+This is the repository accompanying our paper "AgentStealth: On-Device Text Anonymization with Locally Deployable Small Language Models" containing the code to reproduce all our main experiments.
 Below is our main workflow: <img src="main_figure.jpg" alt="AgentStealth" width="50%" />
 
 ## Setup
